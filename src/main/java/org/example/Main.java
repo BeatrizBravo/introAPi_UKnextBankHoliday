@@ -1,3 +1,6 @@
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -6,25 +9,33 @@ import java.net.http.HttpResponse;
 public class Main {
     public static void main(String[] args) {
         try {
-            // 1. Create an HttpClient object
-            HttpClient client = HttpClient.newHttpClient();
+            //  Create an HttpClient object
+            var client = HttpClient.newHttpClient();
 
-            // 2. Create an HttpRequest object with the desired API endpoint and request method
-            HttpRequest request = HttpRequest.newBuilder()
+            //  Create an HttpRequest
+            var request = HttpRequest.newBuilder()
                     .uri(URI.create("https://www.gov.uk/bank-holidays.json"))
-                    //.method("GET", HttpRequest.BodyPublishers.noBody()) //method is used as a shorthand to set the request method to GET.
-                    .GET() //method is used as a shorthand to set the request method to GET.
+                    .GET()
                     .build();
 
-
-            // 3. Send the request synchronously and get the response
+            //  Send the request synchronously and get the response
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // 4. Print the response
-            System.out.println(response.body());
+            // Create an ObjectMapper object
+            ObjectMapper mapper = new ObjectMapper();
+
+            //  Parse the response body as a JsonNode
+            JsonNode root = mapper.readTree(response.body());
+
+            // Extract the bank holidays in England and Wales
+            JsonNode events = root.path("england-and-wales").path("events");
+            for (JsonNode event : events) {
+                String title = event.path("title").asText();
+                String date = event.path("date").asText();
+                System.out.println(title + ": " + date);
+            }
 
         } catch (Exception e) {
-
             System.out.println("URI is not valid");
             e.printStackTrace();
         }
