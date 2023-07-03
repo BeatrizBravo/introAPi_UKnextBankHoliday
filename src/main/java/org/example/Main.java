@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             // 1. Create a URL object with the desired API endpoint
-            URL url = new URL("https://www.example.com/");
+            URL url = new URL("https://api.thecatapi.com/v1/images/search");
 
             // 2. Open a connection to the URL
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -15,7 +15,10 @@ public class Main {
             // 3. Set the request method (GET, POST, etc.)
             con.setRequestMethod("GET");
 
-            // 4. Read the response from the API
+            // 4. Set the request headers
+            con.setRequestProperty("x-api-key", "YOUR-API-KEY-HERE");
+
+            // 5. Read the response from the API
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
             StringBuffer content = new StringBuffer();
@@ -24,7 +27,7 @@ public class Main {
             }
             in.close();
 
-            // 5. Print the response
+            // 6. Print the response
             System.out.println(content.toString());
 
         } catch (Exception e) {
